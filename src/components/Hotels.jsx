@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useHotels from "./Context/useHotels";
+import useHotels from "../Context/useHotels";
 
 function Hotels() {
   const { isLoading, hotels } = useHotels();

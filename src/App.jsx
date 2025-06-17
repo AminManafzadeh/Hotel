@@ -6,7 +6,7 @@ import Layout from "./components/Layout";
 import NotFound from "./components/NotFound";
 import AppLayout from "./components/AppLayout";
 import Hotels from "./components/Hotels";
-import HotelProvider from "./components/Context/HotelProvider";
+import HotelProvider from "./Context/HotelProvider";
 
 function App() {
   return (
