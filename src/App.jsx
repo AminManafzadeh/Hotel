@@ -6,10 +6,11 @@ import Layout from "./components/Layout";
 import NotFound from "./components/NotFound";
 import AppLayout from "./components/AppLayout";
 import Hotels from "./components/Hotels";
+import HotelProvider from "./components/Context/HotelProvider";
 
 function App() {
   return (
-    <div>
+    <HotelProvider>
       <Toaster />
       <Routes>
         <Route element={<Layout />}>
@@ -21,7 +22,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </div>
+    </HotelProvider>
   );
 }
 

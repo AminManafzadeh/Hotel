@@ -213,10 +213,13 @@
   gap: 1rem;
 }
 
-.searchList .searchItem {
+.searchItem {
   display: flex;
   gap: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
+
 .searchList .searchItem img {
   width: 6rem;
   height: 6rem;
@@ -241,6 +244,13 @@
 .searchItem .searchItemDesc .price span {
   color: var(--text-400);
   font-weight: 400;
+}
+
+#hotelsImg {
+  width: 5rem;
+  height: 5rem;
+  object-fit: cover;
+  border-radius: 1rem;
 }
 
 /* app layout */
