@@ -1,19 +1,49 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CiLocationOn } from "react-icons/ci";
 import { CiCalendar } from "react-icons/ci";
 import { HiSearch } from "react-icons/hi";
 import { HiPlusSmall } from "react-icons/hi2";
 import { HiMinusSmall } from "react-icons/hi2";
+import useOutsideClick from "../hooks/useOutsideClick";
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
+import { DateRange } from "react-date-range";
+import { format } from "date-fns";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 function Header() {
   const [destination, setDestination] = useState("");
   const [openOption, setOpenOption] = useState(false);
   const [options, setOptions] = useState({ adult: 1, children: 0, room: 1 });
+  const [openDate, setOpenDate] = useState(false);
+  const [date, setDate] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+  const navigate = useNavigate();
+  // const [searchParams, setSearchParams] = useSearchParams();
 
   const handleOptions = (name, operation) => {
     return setOptions({
       ...options,
       [name]: operation === "inc" ? options[name] + 1 : options[name] - 1,
+    });
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const encodedParams = createSearchParams({
+      destination,
+      date: JSON.stringify(date),
+      options: JSON.stringify(options),
+    });
+    // setSearchParams(encodedParams);
+    navigate({
+      pathname: "/hotels",
+      search: encodedParams.toString(),
     });
   };
 
@@ -35,24 +65,44 @@ function Header() {
         </div>
         <div className="headerSearchItem">
           <CiCalendar className="heaaderIcon dateIcon" />
-          <div className="dateDropDown">2025/06/15</div>
+          <div onClick={() => setOpenDate(!openDate)} className="dateDropDown">
+            {`${format(date[0].startDate, "yyyy-MM-dd")} to ${format(
+              date[0].endDate,
+              "yyyy-MM-dd"
+            )}`}
+          </div>
+          {openDate && (
+            <DateRange
+              className="date"
+              id="date"
+              ranges={date}
+              onChange={(item) => setDate([item.selection])}
+              minDate={new Date()}
+              moveRangeOnFirstSelection={true}
+            />
+          )}
           <span className="seperator"></span>
         </div>
         <div className="headerSearchItem">
           <div
             onClick={() => setOpenOption(!openOption)}
             className="optionDropDown"
+            id="optionDropDown"
           >
             &bull; {options.adult} adult &bull; {options.children} children
             &bull; {options.room} room
           </div>
           {openOption && (
-            <GuestOptionList options={options} onHandleOption={handleOptions} />
+            <GuestOptionList
+              options={options}
+              setOpenOption={setOpenOption}
+              onHandleOption={handleOptions}
+            />
           )}
           <span className="seperator"></span>
         </div>
         <div className="headerSearchItem">
-          <button className="headerSearchBtn">
+          <button onClick={handleSearch} className="headerSearchBtn">
             <HiSearch className="headerIcon" />
           </button>
         </div>
@@ -63,7 +113,9 @@ function Header() {
 
 export default Header;
 
-function GuestOptionList({ options, onHandleOption }) {
+function GuestOptionList({ options, setOpenOption, onHandleOption }) {
+  const optionRef = useRef();
+  useOutsideClick(optionRef, () => setOpenOption(false), "optionDropDown");
   const optionProps = [
     { type: "adult", minLimit: 1, id: 1 },
     { type: "children", minLimit: 0, id: 2 },
@@ -71,7 +123,7 @@ function GuestOptionList({ options, onHandleOption }) {
   ];
 
   return (
-    <div className="guestOptions">
+    <div ref={optionRef} className="guestOptions">
       {optionProps?.map((item) => {
         return (
           <GuestOptionItem
