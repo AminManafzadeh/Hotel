@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import axios from "axios";
 import toast from "react-hot-toast";
-const BASE_URL = "http://localhost:5000/hotels";
+const BASE_URL = "http://localhost:5000";
 
 export const HotelContext = createContext(null);
 
@@ -15,14 +15,14 @@ function HotelProvider({ children }) {
   const room = JSON.parse(searchParams.get("options"))?.room;
 
   const { data: hotels, isLoading } = useFetch(
-    `${BASE_URL}`,
+    `${BASE_URL}/hotels`,
     `q=${destination || ""}&accommodates_gte=${room || 1}`
   );
 
   const getSingleHotelInfo = useCallback(async (id) => {
     setIsLoadingCurrHotel(true);
     try {
-      const { data } = await axios.get(`${BASE_URL}/${id}`);
+      const { data } = await axios.get(`${BASE_URL}/hotels/${id}`);
       setCurrHotel(data);
     } catch (error) {
       toast.error(error?.message);

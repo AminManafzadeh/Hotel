@@ -17,7 +17,7 @@ function SingleHotel() {
       <div className="roomDetail">
         <h2>{currHotel?.name}</h2>
         <div>
-          {currHotel?.number_of_reviews} reviews &bull;{" "}
+          {currHotel?.number_of_reviews}
           {currHotel?.smart_location}
         </div>
         <img src={currHotel?.xl_picture_url} alt={currHotel?.name} />

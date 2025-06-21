@@ -30,7 +30,6 @@ function Header() {
     },
   ]);
   const navigate = useNavigate();
-  // const [searchParams, setSearchParams] = useSearchParams();
 
   const handleOptions = (name, operation) => {
     return setOptions({
@@ -46,7 +45,7 @@ function Header() {
       date: JSON.stringify(date),
       options: JSON.stringify(options),
     });
-    // setSearchParams(encodedParams);
+
     navigate({
       pathname: "/hotels",
       search: encodedParams.toString(),

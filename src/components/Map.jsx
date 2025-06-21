@@ -7,13 +7,12 @@ import {
   useMapEvent,
 } from "react-leaflet";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useUrlLocation from "../hooks/useUrlLocation";
 
 function Map({ markerLocations, isLoading }) {
   const [mapCenter, setMapCenter] = useState([51, -3]);
-  const [searchParams] = useSearchParams();
-  const lat = searchParams.get("lat");
-  const lng = searchParams.get("lng");
+  const [lat, lng] = useUrlLocation();
 
   useEffect(() => {
     if (lat || lng) setMapCenter([lat, lng]);
@@ -57,6 +56,6 @@ function DetectClick() {
   const navigate = useNavigate();
   useMapEvent({
     click: (e) =>
-      navigate(`/bookmarks?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
+      navigate(`/bookmarks/add/?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
   });
 }
