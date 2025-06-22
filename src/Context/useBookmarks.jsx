@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { BookmarksContext } from "./BookmarksProvider";
 
-export default function useBookmarks() {
+function useBookmarks() {
   return useContext(BookmarksContext);
 }
+
+export default useBookmarks;

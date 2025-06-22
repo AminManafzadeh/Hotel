@@ -1,39 +1,66 @@
-import { createContext, useCallback, useState } from "react";
-import useFetch from "../hooks/useFetch";
+import { createContext, useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const BASE_URL = "http://localhost:5000";
+
 export const BookmarksContext = createContext(null);
 
 function BookmarksProvider({ children }) {
   const [currBookmark, setCurrBookmark] = useState({});
-  const [isLoadingCurrBookmark, setIsLoadingCurrBookmark] = useState(false);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: bookmarks, isLoading } = useFetch(`${BASE_URL}/bookmarks`, "");
+  useEffect(() => {
+    async function fetchBookmarks() {
+      setIsLoading(true);
+      try {
+        const { data } = await axios.get(`${BASE_URL}/bookmarks`);
+        setBookmarks(data);
+      } catch (error) {
+        toast.error(error?.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  const getBookmark = useCallback(async (id) => {
-    setIsLoadingCurrBookmark(true);
+    fetchBookmarks();
+  }, []);
+
+  const getSingleBookmarkInfo = useCallback(async (id) => {
+    setIsLoading(true);
     try {
       const { data } = await axios.get(`${BASE_URL}/bookmarks/${id}`);
       setCurrBookmark(data);
     } catch (error) {
       toast.error(error?.message);
     } finally {
-      setIsLoadingCurrBookmark(false);
+      setIsLoading(false);
+    }
+  }, []);
+
+  const deleteBookmark = useCallback(async (id) => {
+    setIsLoading(true);
+    try {
+      await axios.delete(`${BASE_URL}/bookmarks/${id}`);
+      setBookmarks((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      toast.error(error?.message);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   const createBookmark = useCallback(async (newBookmark) => {
-    setIsLoadingCurrBookmark(true);
+    setIsLoading(true);
     try {
       const { data } = await axios.post(`${BASE_URL}/bookmarks`, newBookmark);
       console.log(data);
-      setCurrBookmark(data);
+      setBookmarks((prev) => [...prev, data]);
     } catch (error) {
       toast.error(error?.message);
     } finally {
-      setIsLoadingCurrBookmark(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -42,10 +69,10 @@ function BookmarksProvider({ children }) {
       value={{
         bookmarks,
         isLoading,
-        getBookmark,
         currBookmark,
-        isLoadingCurrBookmark,
+        getSingleBookmarkInfo,
         createBookmark,
+        deleteBookmark,
       }}
     >
       {children}

@@ -267,7 +267,7 @@
 }
 
 .sidebar {
-  width: 35%;
+  width: 30%;
   overflow-y: scroll;
   padding-right: 1rem;
 }
@@ -310,6 +310,7 @@
   color: var(--rose-500);
   width: 1.1rem;
   height: 1.1rem;
+  cursor: pointer;
 }
 
 /* form */

@@ -41,9 +41,9 @@ function Header() {
   const handleSearch = (e) => {
     e.preventDefault();
     const encodedParams = createSearchParams({
-      destination,
       date: JSON.stringify(date),
       options: JSON.stringify(options),
+      destination,
     });
 
     navigate({

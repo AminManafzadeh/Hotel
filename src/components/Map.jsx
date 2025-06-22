@@ -4,7 +4,7 @@ import {
   Popup,
   TileLayer,
   useMap,
-  useMapEvent,
+  useMapEvents,
 } from "react-leaflet";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -54,8 +54,9 @@ function ChangeCenter({ position }) {
 
 function DetectClick() {
   const navigate = useNavigate();
-  useMapEvent({
+  useMapEvents({
     click: (e) =>
       navigate(`/bookmarks/add/?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
   });
+  return null;
 }

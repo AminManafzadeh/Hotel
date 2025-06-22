@@ -1,22 +1,21 @@
-import useBookmarks from "../Context/useBookmarks";
 import { Link } from "react-router-dom";
+import useBookmarks from "../Context/useBookmarks";
+import { HiTrash } from "react-icons/hi";
 
-function getFlagEmoji(countryCode) {
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt());
-  return String.fromCodePoint(...codePoints);
-}
+function BookmarkList() {
+  const { bookmarks, isLoading, currBookmark, deleteBookmark } = useBookmarks();
 
-function Bookmarks() {
-  const { bookmarks, isLoading, currBookmark } = useBookmarks();
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
 
+    await deleteBookmark(id);
+  };
   if (isLoading) return <p>Loading ...</p>;
+  if (!bookmarks.length) return <p>There is no bookmarked location</p>;
 
   return (
     <div>
-      <h2 style={{ marginBottom: "1rem" }}>Bookmarks List</h2>
+      <h2>Bookmark List</h2>
       <div className="bookmarkList">
         {bookmarks?.map((item) => {
           return (
@@ -30,10 +29,12 @@ function Bookmarks() {
                 }`}
               >
                 <div>
-                  {getFlagEmoji(item.countryCode)}
                   &nbsp; <strong>{item.cityName}</strong> &nbsp;
                   <span>{item.country}</span>
                 </div>
+                <button onClick={(e) => handleDelete(e, item.id)}>
+                  <HiTrash className="trash" />
+                </button>
               </div>
             </Link>
           );
@@ -43,4 +44,4 @@ function Bookmarks() {
   );
 }
 
-export default Bookmarks;
+export default BookmarkList;

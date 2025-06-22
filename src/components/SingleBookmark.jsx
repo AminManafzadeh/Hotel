@@ -1,33 +1,37 @@
-import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useBookmarks from "../Context/useBookmarks";
-import ReactCountryFlag from "react-country-flag";
+import { useEffect } from "react";
+import { HiTrash } from "react-icons/hi";
 
 function SingleBookmark() {
-  const { id } = useParams();
-  const { getBookmark, currBookmark, isLoadingCurrBookmark } = useBookmarks();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { getSingleBookmarkInfo, currBookmark, isLoading } = useBookmarks();
 
   useEffect(() => {
-    getBookmark(id);
-  }, [id, getBookmark]);
+    getSingleBookmarkInfo(id);
+  }, [id, getSingleBookmarkInfo]);
 
-  if (isLoadingCurrBookmark) return <p>Loading ...</p>;
+  if (isLoading) return <p>Loading ...</p>;
 
   return (
     <div>
       <button
-        style={{ marginBottom: "1rem" }}
         onClick={() => navigate(-1)}
+        style={{ marginBottom: "1rem" }}
         className="btn btn--back"
       >
         &larr; Back
       </button>
-      <h2 style={{ marginBottom: "1rem" }}>{currBookmark?.cityName}</h2>
-      <div className="bookmarkItem">
-        <ReactCountryFlag svg countryCode={currBookmark.countryCode} />
-        &nbsp; <strong>{currBookmark.cityName}</strong> &nbsp;
-        <span>{currBookmark.country}</span>
+      <h2>{currBookmark?.cityName}</h2>
+      <div style={{ marginTop: "1rem" }} className="bookmarkItem">
+        <div>
+          &nbsp; <strong>{currBookmark.cityName}</strong> &nbsp;
+          <span>{currBookmark.country}</span>
+        </div>
+        <button>
+          <HiTrash className="trash" />
+        </button>
       </div>
     </div>
   );

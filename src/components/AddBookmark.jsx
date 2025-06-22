@@ -1,34 +1,28 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUrlLocation from "../hooks/useUrlLocation";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import axios from "axios";
+import toast from "react-hot-toast";
 import useBookmarks from "../Context/useBookmarks";
 
-function getFlagEmoji(countryCode) {
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt());
-  return String.fromCodePoint(...codePoints);
-}
-
 const BASE_GEOCODING_URL =
-  "https://us1.api-bdc.net/data/reverse-geocode-client";
+  "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
-function AddNewBookmark() {
-  const [lat, lng] = useUrlLocation();
+function AddBookmark() {
+  const navigate = useNavigate();
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
   const [countryCode, setCountryCode] = useState("");
+  const [lat, lng] = useUrlLocation();
   const [isLoadingGeoCoding, setIsLoadingGeoCoding] = useState(false);
-  const navigate = useNavigate();
   const { createBookmark } = useBookmarks();
+
+  console.log(lat, lng);
 
   useEffect(() => {
     if (!lat || !lng) return;
-    async function fetchData() {
-      setIsLoadingGeoCoding(true);
+    setIsLoadingGeoCoding(true);
+    async function fetchLocationData() {
       try {
         const { data } = await axios.get(
           `${BASE_GEOCODING_URL}?latitude=${lat}&longitude=${lng}`
@@ -36,13 +30,12 @@ function AddNewBookmark() {
 
         if (!data.countryCode)
           throw new Error(
-            "This location is not a city! please click somewhere else on map"
+            "This location is not a city !! please click somewhere else"
           );
 
-        setCityName(data?.city || "");
-        setCountry(data?.countryName || "");
-        setCountryCode(getFlagEmoji(data?.countryCode));
-        console.log(data);
+        setCityName(data.city || data.locality || "");
+        setCountry(data.countryName);
+        setCountryCode(data.countryCode);
       } catch (error) {
         toast.error(error?.message);
       } finally {
@@ -50,16 +43,11 @@ function AddNewBookmark() {
       }
     }
 
-    fetchData();
+    fetchLocationData();
   }, [lat, lng]);
 
-  const handleBack = (e) => {
-    e.preventDefault();
-    navigate(-1);
-  };
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.prevventDefault();
     if (!cityName || !country) return;
 
     const newBookmark = {
@@ -72,35 +60,43 @@ function AddNewBookmark() {
     };
 
     await createBookmark(newBookmark);
+    navigate("/bookmarks");
+  };
+
+  const handleBack = (e) => {
+    e.prevventDefault();
+    navigate(-1);
   };
 
   if (isLoadingGeoCoding) return <p>Loading ...</p>;
-
   return (
     <div>
-      <h2 style={{ marginBottom: "1rem" }}>Bookmark New Location</h2>
+      <h2 style={{ marginBottom: "1.5rem" }}>Bookmark new Location</h2>
       <form onSubmit={handleSubmit} className="form">
         <div className="formControl">
-          <label htmlFor="cityName">CityName :</label>
+          <label style={{ marginBottom: "1rem" }} htmlFor="cityName">
+            CityName :
+          </label>
           <input
             value={cityName}
             onChange={(e) => setCityName(e.target.value)}
             type="text"
-            name="cityName"
             id="cityName"
+            name="cityName"
           />
         </div>
 
         <div className="formControl">
-          <label htmlFor="country">CityName :</label>
+          <label style={{ marginBottom: "0.5rem" }} htmlFor="country">
+            Country :
+          </label>
           <input
             value={country}
             onChange={(e) => setCountry(e.target.value)}
             type="text"
-            name="country"
             id="country"
+            name="country"
           />
-          <span className=" flag">{countryCode}</span>
         </div>
 
         <div className="buttons">
@@ -114,4 +110,4 @@ function AddNewBookmark() {
   );
 }
 
-export default AddNewBookmark;
+export default AddBookmark;
