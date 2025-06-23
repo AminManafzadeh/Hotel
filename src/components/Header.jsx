@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { CiLocationOn } from "react-icons/ci";
 import { CiCalendar } from "react-icons/ci";
-import { HiSearch } from "react-icons/hi";
+import { HiLogout, HiSearch } from "react-icons/hi";
 import { HiPlusSmall } from "react-icons/hi2";
 import { HiMinusSmall } from "react-icons/hi2";
 import useOutsideClick from "../hooks/useOutsideClick";
@@ -11,9 +11,11 @@ import { DateRange } from "react-date-range";
 import { format } from "date-fns";
 import {
   createSearchParams,
+  NavLink,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import useAuth from "../Context/useAuth";
 
 function Header() {
   const [serachParams] = useSearchParams();
@@ -54,6 +56,7 @@ function Header() {
 
   return (
     <div className="header">
+      <NavLink to="/bookmarks">Bookmarks</NavLink>
       <div className="headerSearch">
         <div className="headerSearchItem">
           <CiLocationOn className="heaaderIcon locationIcon" />
@@ -112,6 +115,7 @@ function Header() {
           </button>
         </div>
       </div>
+      <User />
     </div>
   );
 }
@@ -163,6 +167,36 @@ function GuestOptionItem({ options, type, minLimit, onHandleOption }) {
           <HiPlusSmall className="icon" />
         </button>
       </div>
+    </div>
+  );
+}
+
+function User() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+
+    await logout();
+    navigate("/");
+  };
+
+  return (
+    <div>
+      {isAuthenticated ? (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span>{user.name}</span>
+          <button
+            onClick={handleLogout}
+            style={{ marginLeft: "0.5rem", marginTop: "0.3rem" }}
+          >
+            <HiLogout style={{ color: "red" }} className="icon" />
+          </button>
+        </div>
+      ) : (
+        <NavLink to="/login">Login</NavLink>
+      )}
     </div>
   );
 }
